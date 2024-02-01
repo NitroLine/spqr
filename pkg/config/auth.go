@@ -8,6 +8,7 @@ const (
 	AuthClearText = AuthMethod("clear_text")
 	AuthMD5       = AuthMethod("md5")
 	AuthSCRAM     = AuthMethod("scram")
+	AuthGSS       = AuthMethod("gss")
 )
 
 type AuthCfg struct {

@@ -284,6 +284,16 @@ func AuthFrontend(cl client.Client, rule *config.FrontendRule) error {
 		}
 		err = cl.Send(&pgproto3.AuthenticationSASLFinal{Data: []byte(finalMsg)})
 		return err
+	case config.AuthGSS:
+		connClose, gssUser, err := getGssUser(cl)
+		if connClose != nil {
+			defer connClose()
+		}
+		if err != nil {
+			return err
+		}
+		fmt.Println(gssUser)
+		return nil
 	default:
 		return fmt.Errorf("invalid auth method '%v'", rule.AuthRule.Method)
 	}
