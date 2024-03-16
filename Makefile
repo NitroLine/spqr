@@ -1,6 +1,7 @@
 GIT_REVISION=`git rev-parse --short HEAD`
 SPQR_VERSION=`git describe --tags --abbrev=0`
 LDFLAGS=-ldflags "-X github.com/pg-sharding/spqr/pkg.GitRevision=${GIT_REVISION} -X github.com/pg-sharding/spqr/pkg.SpqrVersion=${SPQR_VERSION}"
+GCFLAGS=-gcflags=all="-N -l"
 
 .PHONY : run
 .DEFAULT_GOAL := deps
@@ -20,9 +21,6 @@ deps:
 
 ####################### BUILD #######################
 
-build_balancer:
-	go build -pgo=auto -o spqr-balancer ./cmd/balancer
-
 build_coorctl:
 	go build -pgo=auto -o coorctl ./cmd/coordctl
 
@@ -30,7 +28,7 @@ build_coordinator:
 	go build -pgo=auto -o spqr-coordinator ./cmd/coordinator
 
 build_router: 
-	go build -pgo=auto -o spqr-router $(LDFLAGS) ./cmd/router
+	go build -pgo=auto -o spqr-router $(LDFLAGS) $(GCFLAGS) ./cmd/router
 
 build_mover:
 	go build -pgo=auto -o spqr-mover  ./cmd/mover
@@ -41,7 +39,10 @@ build_worldmock:
 build_workloadreplay:
 	go build -pgo=auto -o spqr-workloadreplay ./cmd/workloadreplay
 
-build: build_balancer build_coordinator build_coorctl build_router build_mover build_worldmock build_workloadreplay
+build_spqrdump:
+	go build -pgo=auto -o spqrdump ./cmd/spqrdump
+
+build: build_coordinator build_coorctl build_router build_mover build_worldmock build_workloadreplay build_spqrdump
 
 build_images:
 	docker compose build spqr-base-image
@@ -58,7 +59,7 @@ save_shard_image:
 	docker save ${IMAGE_SHARD} | gzip -c > ${CACHE_FILE_SHARD};\
 
 clean:
-	rm -f spqr-router spqr-coordinator spqr-mover spqr-worldmock spqr-balancer
+	rm -f spqr-router spqr-coordinator spqr-mover spqr-worldmock
 	make clean_feature_test
 
 ######################## RUN ########################
@@ -89,7 +90,7 @@ regress_local: proxy_2sh_run
 	./script/regress_local.sh
 
 regress: build_images
-	docker compose -f test/regress/docker-compose.yaml up --remove-orphans --force-recreate --exit-code-from regress --build coordinator router shard1 shard2 regress qdb01
+	docker compose -f test/regress/docker-compose.yaml down && docker compose -f test/regress/docker-compose.yaml run --build --remove-orphans regress
 
 hibernate_regress: build_images
 	docker compose -f test/drivers/hibernate-regress/docker-compose.yaml up --remove-orphans --force-recreate --exit-code-from regress --build coordinator router shard1 shard2 regress qdb01
@@ -98,10 +99,10 @@ jdbc_regress: build_images
 	docker compose -f test/drivers/jdbc-regress/docker-compose.yaml up --remove-orphans --force-recreate --exit-code-from regress --build coordinator router shard1 shard2 regress qdb01
 
 gorm_regress: build_images
-	docker compose -f test/drivers/gorm-regress/docker-compose.yaml up --remove-orphans --force-recreate --exit-code-from regress --build coordinator router shard1 shard2 regress qdb01
+	docker compose -f test/drivers/gorm-regress/docker-compose.yaml down && docker compose -f test/drivers/gorm-regress/docker-compose.yaml run --remove-orphans --build regress
 
 xproto_regress: build_images
-	docker compose -f test/xproto/docker-compose.yaml up --remove-orphans --force-recreate --exit-code-from regress --build coordinator router shard1 shard2 regress qdb01
+	docker compose -f test/xproto/docker-compose.yaml down && docker compose -f test/xproto/docker-compose.yaml run --remove-orphans --build regress
 
 e2e: build_images
 	docker compose up --remove-orphans --exit-code-from client --build router coordinator shard1 shard2 qdb01 client

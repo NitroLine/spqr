@@ -1,6 +1,6 @@
 \c spqr-console
 
-		SQPR router admin console
+		SPQR router admin console
 	Here you can configure your routing rules
 ------------------------------------------------
 	You can find documentation here 
@@ -16,18 +16,6 @@ CREATE DISTRIBUTION ds2;
          add distribution         
 ----------------------------------
  created distribution with id ds2
-(1 row)
-
-CREATE SHARDING RULE r1 COLUMNS w_id FOR DISTRIBUTION ds1;
-                                     add sharding rule                                      
---------------------------------------------------------------------------------------------
- created sharding rule r1 for table (*) with columns [w_id, hash: x->x] in ds1 distribution
-(1 row)
-
-CREATE SHARDING RULE r2 COLUMNS w_id FOR DISTRIBUTION ds2;
-                                     add sharding rule                                      
---------------------------------------------------------------------------------------------
- created sharding rule r2 for table (*) with columns [w_id, hash: x->x] in ds2 distribution
 (1 row)
 
 CREATE KEY RANGE krid1 FROM 1 ROUTE TO sh1 FOR DISTRIBUTION ds1;
@@ -54,18 +42,22 @@ CREATE KEY RANGE FROM 1 ROUTE TO sh2 FOR DISTRIBUTION ds2;
  created key range with bound 1
 (1 row)
 
-ATTACH TABLE xx TO DISTRIBUTION ds1;
+ALTER DISTRIBUTION ds1 ATTACH RELATION xx DISTRIBUTION KEY w_id;
                attach table               
 ------------------------------------------
  attached relation xx to distribution ds1
 (1 row)
 
-ATTACH TABLE yy TO DISTRIBUTION ds2;
+ALTER DISTRIBUTION ds2 ATTACH RELATION yy DISTRIBUTION KEY w_id;
                attach table               
 ------------------------------------------
  attached relation yy to distribution ds2
 (1 row)
 
+ALTER DISTRIBUTION ds3 ATTACH RELATION xx DISTRIBUTION KEY w_id;
+ERROR:  no such distribution.
+ALTER DISTRIBUTION ds1 ATTACH RELATION xx DISTRIBUTION KEY w_id;
+ERROR:  relation "xx" is already attached.
 \c regress
 DROP TABLE IF EXISTS xx;
 NOTICE: send query to shard(s) : sh1,sh2
@@ -90,9 +82,37 @@ NOTICE: send query to shard(s) : sh2
 ------
 (0 rows)
 
-SET __spqr__distribution = ds2;
-SELECT * FROM xx WHERE w_id=5;
-NOTICE: send query to shard(s) : sh2
+\c spqr-console
+
+		SPQR router admin console
+	Here you can configure your routing rules
+------------------------------------------------
+	You can find documentation here 
+https://github.com/pg-sharding/spqr/tree/master/docs
+
+ALTER DISTRIBUTION ds1 ATTACH RELATION yy DISTRIBUTION KEY w_id;
+ERROR:  relation "yy" is already attached.
+ALTER DISTRIBUTION ds2 DETACH RELATION yy;
+              detach relation               
+--------------------------------------------
+ detached relation yy from distribution ds2
+(1 row)
+
+ALTER DISTRIBUTION ds2 DETACH RELATION yy;
+              detach relation               
+--------------------------------------------
+ detached relation yy from distribution ds2
+(1 row)
+
+ALTER DISTRIBUTION ds1 ATTACH RELATION yy DISTRIBUTION KEY w_id;
+               attach table               
+------------------------------------------
+ attached relation yy to distribution ds1
+(1 row)
+
+\c regress
+SELECT * FROM yy WHERE w_id=5;
+NOTICE: send query to shard(s) : sh1
  w_id 
 ------
 (0 rows)
@@ -103,7 +123,7 @@ DROP TABLE yy;
 NOTICE: send query to shard(s) : sh1,sh2
 \c spqr-console
 
-		SQPR router admin console
+		SPQR router admin console
 	Here you can configure your routing rules
 ------------------------------------------------
 	You can find documentation here 
@@ -115,12 +135,6 @@ DROP DISTRIBUTION ALL CASCADE;
  drop distribution ds1
  drop distribution ds2
 (2 rows)
-
-DROP SHARDING RULE ALL;
-   drop sharding rule   
-------------------------
- dropped sharding rule 
-(1 row)
 
 DROP KEY RANGE ALL;
  drop key range 

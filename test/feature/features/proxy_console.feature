@@ -28,11 +28,12 @@ Feature: Proxy console
         """
         Then command return code should be "0"
 
-    Scenario: Add key_range/sharding_rule is executed in coordinator
+# TODO: check distributions in this test
+    Scenario: Add key_range is executed in coordinator
         When I run SQL on host "router-admin"
         """
-        CREATE KEY RANGE krid1 FROM 0 TO 10 ROUTE TO sh1;
-        CREATE SHARDING RULE r1 COLUMN id;
+        CREATE DISTRIBUTION ds1 COLUMN TYPES integer;
+        CREATE KEY RANGE krid1 FROM 0 TO 10 ROUTE TO sh1 FOR DISTRIBUTION ds1;
         """
         Then command return code should be "0"
 
@@ -47,23 +48,9 @@ Feature: Proxy console
         """
         [{
             "Key range ID":"krid1",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"0",
             "Shard ID":"sh1"
-        }]
-        """
-        When I run SQL on host "router-admin"
-        """
-        SHOW sharding_rules
-        """
-        Then SQL result should match json_exactly
-        """
-        [{
-            "Columns":"id",
-            "Distribution ID":"default",
-            "Hash Function":"x->x",
-            "Sharding Rule ID":"r1",
-            "Table Name":"*"
         }]
         """
 
@@ -78,31 +65,18 @@ Feature: Proxy console
         """
         [{
             "Key range ID":"krid1",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"0",
             "Shard ID":"sh1"
-        }]
-        """
-        When I run SQL on host "router2-admin"
-        """
-        SHOW sharding_rules
-        """
-        Then SQL result should match json_exactly
-        """
-        [{
-            "Columns":"id",
-            "Distribution ID":"default",
-            "Hash Function":"x->x",
-            "Sharding Rule ID":"r1",
-            "Table Name":"*"
         }]
         """
 
     Scenario: Lock/Unlock key_range are executed in coordinator
         When I run SQL on host "router-admin"
         """
-        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1;
-        CREATE SHARDING RULE r1 COLUMN id;
+        CREATE DISTRIBUTION ds1 COLUMN TYPES integer;
+        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1 FOR DISTRIBUTION ds1;
+        ALTER DISTRIBUTION ds1 ATTACH RELATION test DISTRIBUTION KEY id;
         """
         Then command return code should be "0"
 
@@ -114,7 +88,7 @@ Feature: Proxy console
 
         When I run SQL on host "router-admin"
         """
-        LOCK KEY RANGE krid1
+        LOCK KEY RANGE krid1;
         """
         Then command return code should be "0"
 
@@ -129,7 +103,7 @@ Feature: Proxy console
 
         When I run SQL on host "router-admin"
         """
-        UNLOCK KEY RANGE krid1
+        UNLOCK KEY RANGE krid1;
         """
         Then command return code should be "0"
 
@@ -142,26 +116,27 @@ Feature: Proxy console
     Scenario: Split/Unite key_range are executed in coordinator
         When I run SQL on host "router-admin"
         """
-        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1;
+        CREATE DISTRIBUTION ds1 COLUMN TYPES integer;
+        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1 FOR DISTRIBUTION ds1;
         SPLIT KEY RANGE new_krid FROM krid1 BY 5;
         """
         Then command return code should be "0"
 
         When I run SQL on host "router2-admin"
         """
-        SHOW key_ranges
+        SHOW key_ranges;
         """
         Then SQL result should match json_exactly
         """
         [{
             "Key range ID":"krid1",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"0",
             "Shard ID":"sh1"
         },
         {
             "Key range ID":"new_krid",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"5",
             "Shard ID":"sh1"
         }]
@@ -169,7 +144,7 @@ Feature: Proxy console
 
         When I run SQL on host "router-admin"
         """
-        UNITE KEY RANGE krid1 WITH new_krid
+        UNITE KEY RANGE krid1 WITH new_krid;
         """
         Then command return code should be "0"
 
@@ -181,7 +156,7 @@ Feature: Proxy console
         """
         [{
             "Key range ID":"krid1",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"0",
             "Shard ID":"sh1"
         }]
@@ -190,8 +165,9 @@ Feature: Proxy console
     Scenario: Move is executed in coordinator
         When I run SQL on host "router-admin"
         """
-        CREATE SHARDING RULE r1 COLUMN id;
-        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1
+        CREATE DISTRIBUTION ds1 COLUMN TYPES integer;
+        CREATE KEY RANGE krid1 FROM 0 ROUTE TO sh1  FOR DISTRIBUTION ds1;
+        ALTER DISTRIBUTION ds1 ATTACH RELATION test DISTRIBUTION KEY id;
         """
         Then command return code should be "0"
 
@@ -205,13 +181,13 @@ Feature: Proxy console
 
         When I run SQL on host "router-admin"
         """
-        MOVE KEY RANGE krid1 TO sh2
+        MOVE KEY RANGE krid1 TO sh2;
         """
         Then command return code should be "0"
 
         When I run SQL on host "shard2"
         """
-        SELECT * FROM test
+        SELECT * FROM test;
         """
         Then SQL result should match json_exactly
         """
@@ -223,14 +199,13 @@ Feature: Proxy console
         }]
         """
 
-    Scenario: Show key_ranges/sharding_rules is executed in router
+    Scenario: Show key_ranges is executed in router
         When I run SQL on host "router-admin"
         """
-        CREATE KEY RANGE old_krid FROM 0 ROUTE TO sh2;
-        CREATE SHARDING RULE old_rule COLUMN id;
+        CREATE DISTRIBUTION ds1 COLUMN TYPES integer;
+        CREATE KEY RANGE old_krid FROM 0 ROUTE TO sh2 FOR DISTRIBUTION ds1;
         UNREGISTER ROUTER r1;
-        CREATE KEY RANGE new_krid FROM 100 ROUTE TO sh1;
-        CREATE SHARDING RULE new_rule COLUMN xid;
+        CREATE KEY RANGE new_krid FROM 100 ROUTE TO sh1 FOR DISTRIBUTION ds1;
         """
         Then command return code should be "0"
 
@@ -242,31 +217,16 @@ Feature: Proxy console
         """
         [{
             "Key range ID":"old_krid",
-            "Distribution ID":"default",
+            "Distribution ID":"ds1",
             "Lower bound":"0",
             "Shard ID":"sh2"
-        }]
-        """
-
-        When I run SQL on host "router-admin"
-        """
-        SHOW sharding_rules
-        """
-        Then SQL result should match json_exactly
-        """
-        [{
-            "Columns":"id",
-            "Distribution ID":"default",
-            "Hash Function":"x->x",
-            "Sharding Rule ID":"old_rule",
-            "Table Name":"*"
         }]
         """
 
     Scenario: Show routers is executed in coordinator
         When I run SQL on host "router-admin"
         """
-        SHOW routers
+        SHOW routers;
         """
         Then SQL result should match regexp
         """

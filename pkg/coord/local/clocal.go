@@ -11,7 +11,6 @@ import (
 	"github.com/pg-sharding/spqr/pkg/models/datashards"
 	"github.com/pg-sharding/spqr/pkg/models/distributions"
 	"github.com/pg-sharding/spqr/pkg/models/kr"
-	"github.com/pg-sharding/spqr/pkg/models/shrule"
 	"github.com/pg-sharding/spqr/pkg/models/topology"
 	"github.com/pg-sharding/spqr/pkg/spqrlog"
 	"github.com/pg-sharding/spqr/qdb"
@@ -21,8 +20,6 @@ import (
 
 type LocalCoordinator struct {
 	mu sync.Mutex
-
-	Rules []*shrule.ShardingRule
 
 	ColumnMapping map[string]struct{}
 	LocalTables   map[string]struct{}
@@ -36,7 +33,7 @@ type LocalCoordinator struct {
 }
 
 // TODO : unit tests
-func (lc *LocalCoordinator) ListDistribution(ctx context.Context) ([]*distributions.Distribution, error) {
+func (lc *LocalCoordinator) ListDistributions(ctx context.Context) ([]*distributions.Distribution, error) {
 	lc.mu.Lock()
 	defer lc.mu.Unlock()
 
@@ -47,9 +44,7 @@ func (lc *LocalCoordinator) ListDistribution(ctx context.Context) ([]*distributi
 	var retDsp []*distributions.Distribution
 
 	for _, dsp := range resp {
-		retDsp = append(retDsp, &distributions.Distribution{
-			Id: dsp.ID,
-		})
+		retDsp = append(retDsp, distributions.DistributionFromDB(dsp))
 	}
 	return retDsp, nil
 }
@@ -72,6 +67,14 @@ func (lc *LocalCoordinator) AlterDistributionAttach(ctx context.Context, id stri
 	}
 
 	return lc.qdb.AlterDistributionAttach(ctx, id, dRels)
+}
+
+// TODO : unit tests
+func (lc *LocalCoordinator) AlterDistributionDetach(ctx context.Context, id string, relName string) error {
+	lc.mu.Lock()
+	defer lc.mu.Unlock()
+
+	return lc.qdb.AlterDistributionDetach(ctx, id, relName)
 }
 
 // TODO : unit tests
@@ -145,6 +148,16 @@ func (lc *LocalCoordinator) AddWorldShard(ctx context.Context, ds *datashards.Da
 	lc.WorldShardCfgs[ds.ID] = ds.Cfg
 
 	return nil
+}
+
+func (lc *LocalCoordinator) DropShard(ctx context.Context, shardId string) error {
+	lc.mu.Lock()
+	defer lc.mu.Unlock()
+
+	delete(lc.DataShardCfgs, shardId)
+	delete(lc.WorldShardCfgs, shardId)
+
+	return lc.qdb.DropShard(ctx, shardId)
 }
 
 // TODO : unit tests
@@ -238,11 +251,11 @@ func (qr *LocalCoordinator) Move(ctx context.Context, req *kr.MoveKeyRange) erro
 
 // TODO : unit tests
 func (qr *LocalCoordinator) Unite(ctx context.Context, req *kr.UniteKeyRange) error {
-	var krleft *qdb.KeyRange
-	var krright *qdb.KeyRange
+	var krBase *qdb.KeyRange
+	var krAppendage *qdb.KeyRange
 	var err error
 
-	if krleft, err = qr.qdb.LockKeyRange(ctx, req.KeyRangeIDLeft); err != nil { //nolint:all TODO
+	if krBase, err = qr.qdb.LockKeyRange(ctx, req.BaseKeyRangeId); err != nil { //nolint:all TODO
 		return err
 	}
 	defer func(qdb qdb.QDB, ctx context.Context, keyRangeID string) {
@@ -251,22 +264,27 @@ func (qr *LocalCoordinator) Unite(ctx context.Context, req *kr.UniteKeyRange) er
 			spqrlog.Zero.Error().Err(err).Msg("")
 			return
 		}
-	}(qr.qdb, ctx, req.KeyRangeIDLeft)
+	}(qr.qdb, ctx, req.BaseKeyRangeId)
 
 	// TODO: krRight seems to be empty.
-	if krright, err = qr.qdb.GetKeyRange(ctx, req.KeyRangeIDRight); err != nil {
+	if krAppendage, err = qr.qdb.GetKeyRange(ctx, req.AppendageKeyRangeId); err != nil {
 		return err
 	}
 
-	if err = qr.qdb.DropKeyRange(ctx, krright.KeyRangeID); err != nil {
+	if err = qr.qdb.DropKeyRange(ctx, krAppendage.KeyRangeID); err != nil {
 		return err
+	}
+
+	newBound := krBase.LowerBound
+	if kr.CmpRangesLess(krAppendage.LowerBound, krBase.LowerBound) {
+		newBound = krAppendage.LowerBound
 	}
 
 	united := &kr.KeyRange{
-		LowerBound:   krleft.LowerBound,
-		ShardID:      krleft.ShardID,
-		Distribution: krleft.DistributionId,
-		ID:           krleft.KeyRangeID,
+		LowerBound:   newBound,
+		ShardID:      krBase.ShardID,
+		Distribution: krBase.DistributionId,
+		ID:           krBase.KeyRangeID,
 	}
 
 	return ops.ModifyKeyRangeWithChecks(ctx, qr.qdb, united)
@@ -293,15 +311,17 @@ func (qr *LocalCoordinator) Split(ctx context.Context, req *kr.SplitKeyRange) er
 		}
 	}()
 
-	krNew := kr.KeyRangeFromDB(
-		&qdb.KeyRange{
-			LowerBound:     req.Bound,
-			UpperBound:     krOld.UpperBound,
-			KeyRangeID:     req.Krid,
-			ShardID:        krOld.ShardID,
-			DistributionId: krOld.DistributionId,
-		},
-	)
+	krNew := &kr.KeyRange{
+		LowerBound: func() []byte {
+			if req.SplitLeft {
+				return krOld.LowerBound
+			}
+			return req.Bound
+		}(),
+		ID:           req.Krid,
+		ShardID:      krOld.ShardID,
+		Distribution: krOld.DistributionId,
+	}
 
 	spqrlog.Zero.Debug().
 		Bytes("lower-bound", krNew.LowerBound).
@@ -309,7 +329,11 @@ func (qr *LocalCoordinator) Split(ctx context.Context, req *kr.SplitKeyRange) er
 		Str("id", krNew.ID).
 		Msg("new key range")
 
-	krOld.UpperBound = req.Bound
+	if req.SplitLeft {
+		krOld.LowerBound = req.Bound
+	} else {
+		krOld.UpperBound = req.Bound
+	}
 	if err := ops.ModifyKeyRangeWithChecks(ctx, qr.qdb, kr.KeyRangeFromDB(krOld)); err != nil {
 		return err
 	}
@@ -398,44 +422,6 @@ func (qr *LocalCoordinator) ListRouters(ctx context.Context) ([]*topology.Router
 	}}, nil
 }
 
-func (qr *LocalCoordinator) AddShardingRule(ctx context.Context, rule *shrule.ShardingRule) error {
-	return ops.AddShardingRuleWithChecks(ctx, qr.qdb, rule)
-}
-
-// TODO : unit tests
-func (qr *LocalCoordinator) ListShardingRules(ctx context.Context, distribution string) ([]*shrule.ShardingRule, error) {
-	rules, err := qr.qdb.ListShardingRules(ctx, distribution)
-	if err != nil {
-		return nil, err
-	}
-	var resp []*shrule.ShardingRule
-	for _, v := range rules {
-		resp = append(resp, shrule.ShardingRuleFromDB(v))
-
-	}
-
-	return resp, nil
-}
-
-// TODO : unit tests
-func (qr *LocalCoordinator) ListAllShardingRules(ctx context.Context) ([]*shrule.ShardingRule, error) {
-	rules, err := qr.qdb.ListAllShardingRules(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var resp []*shrule.ShardingRule
-	for _, v := range rules {
-		resp = append(resp, shrule.ShardingRuleFromDB(v))
-
-	}
-
-	return resp, nil
-}
-
-func (qr *LocalCoordinator) DropShardingRule(ctx context.Context, id string) error {
-	return qr.qdb.DropShardingRule(ctx, id)
-}
-
 func (qr *LocalCoordinator) AddKeyRange(ctx context.Context, kr *kr.KeyRange) error {
 	return ops.AddKeyRangeWithChecks(ctx, qr.qdb, kr)
 }
@@ -444,22 +430,7 @@ func (qr *LocalCoordinator) MoveKeyRange(ctx context.Context, kr *kr.KeyRange) e
 	return ops.ModifyKeyRangeWithChecks(ctx, qr.qdb, kr)
 }
 
-var ErrNotCoordinator = fmt.Errorf("request is unprocessable in route")
-
-// TODO : unit tests
-func (qr *LocalCoordinator) DropShardingRuleAll(ctx context.Context) ([]*shrule.ShardingRule, error) {
-	rules, err := qr.qdb.DropShardingRuleAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var retRules []*shrule.ShardingRule
-
-	for _, r := range rules {
-		retRules = append(retRules, shrule.ShardingRuleFromDB(r))
-	}
-
-	return retRules, nil
-}
+var ErrNotCoordinator = fmt.Errorf("request is unprocessable in router")
 
 func (qr *LocalCoordinator) RegisterRouter(ctx context.Context, r *topology.Router) error {
 	return ErrNotCoordinator

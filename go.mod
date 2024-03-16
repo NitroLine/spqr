@@ -5,13 +5,13 @@ go 1.21
 require (
 	github.com/BurntSushi/toml v1.3.2
 	github.com/caio/go-tdigest v3.1.0+incompatible
-	github.com/cucumber/godog v0.13.0
-	github.com/docker/docker v25.0.1+incompatible
+	github.com/cucumber/godog v0.14.0
+	github.com/docker/docker v25.0.4+incompatible
 	github.com/go-faster/city v1.0.1
 	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
-	github.com/jackc/pgx/v5 v5.5.2
+	github.com/jackc/pgx/v5 v5.5.5
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/juju/errors v1.0.0
 	github.com/lib/pq v1.10.9
@@ -19,22 +19,22 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pg-sharding/lyx v0.0.0-20240124154818-9ae64786af39
 	github.com/pkg/errors v0.9.1
-	github.com/rs/zerolog v1.31.0
+	github.com/rs/zerolog v1.32.0
 	github.com/sevlyar/go-daemon v0.1.6
 	github.com/spaolacci/murmur3 v1.1.0
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	github.com/uber/jaeger-client-go v2.30.0+incompatible
 	github.com/uber/jaeger-lib v2.4.1+incompatible
 	github.com/xdg-go/scram v1.1.2
 	go.etcd.io/etcd/client/v3 v3.5.12
 	go.uber.org/atomic v1.11.0
-	golang.org/x/crypto v0.18.0
+	golang.org/x/crypto v0.21.0
 	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	golang.yandex/hasql v1.1.1
-	google.golang.org/grpc v1.61.0
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/grpc v1.62.1
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -85,15 +85,15 @@ require (
 	go.opentelemetry.io/otel/trace v1.22.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.17.0 // indirect
-	golang.org/x/net v0.18.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	gonum.org/v1/gonum v0.14.0 // indirect
-	google.golang.org/genproto v0.0.0-20231106174013-bbf56f31fb17 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20231106174013-bbf56f31fb17 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231106174013-bbf56f31fb17 // indirect
+	google.golang.org/genproto v0.0.0-20240123012728-ef4313101c80 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240123012728-ef4313101c80 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240123012728-ef4313101c80 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 )

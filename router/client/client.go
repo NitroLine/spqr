@@ -109,13 +109,23 @@ type PsqlClient struct {
 
 	bindParams [][]byte
 
+	paramCodes []int16
+
 	rh routehint.RouteHint
 
 	/* protects server */
 	mu     sync.RWMutex
 	server server.Server
+}
 
-	distributionChanged bool
+// BindParamFormatCodes implements RouterClient.
+func (cl *PsqlClient) BindParamFormatCodes() []int16 {
+	return cl.paramCodes
+}
+
+// SetParamFormatCodes implements RouterClient.
+func (cl *PsqlClient) SetParamFormatCodes(paramCodes []int16) {
+	cl.paramCodes = paramCodes
 }
 
 // BindParams implements RouterClient.
@@ -126,25 +136,6 @@ func (cl *PsqlClient) BindParams() [][]byte {
 // SetBindParams implements RouterClient.
 func (cl *PsqlClient) SetBindParams(p [][]byte) {
 	cl.bindParams = p
-}
-
-// Distribution implements RouterClient.
-func (cl *PsqlClient) Distribution() string {
-	if val, ok := cl.internalParamSet[session.SPQR_DISTRIBUTION]; ok {
-		return val
-	}
-	return DefaultDS
-}
-
-// SetDistribution implements RouterClient.
-func (cl *PsqlClient) SetDistribution(d string) {
-	cl.internalParamSet[session.SPQR_DISTRIBUTION] = d
-	cl.distributionChanged = true
-}
-
-// DistributionIsDefault implements RouterClient.
-func (cl *PsqlClient) DistributionIsDefault() bool {
-	return !cl.distributionChanged
 }
 
 // SetShardingKey implements RouterClient.
@@ -707,7 +698,6 @@ func (cl *PsqlClient) Auth(rt *route.Route) error {
 		Uint("client", cl.ID()).
 		Str("user", cl.Usr()).
 		Str("db", cl.DB()).
-		Str("distribution", cl.Distribution()).
 		Msg("client connection for rule accepted")
 
 	ps, err := rt.Params()
@@ -997,16 +987,6 @@ func (f FakeClient) DB() string {
 	return DefaultDB
 }
 
-func (f FakeClient) Distribution() string {
-	return DefaultDS
-}
-
-func (f FakeClient) DistributionIsDefault() bool {
-	return true
-}
-
-func (c FakeClient) SetDS(_ string) {}
-
 func NewFakeClient() *FakeClient {
 	return &FakeClient{}
 }
@@ -1061,16 +1041,6 @@ func (c NoopClient) Usr() string {
 func (c NoopClient) DB() string {
 	return c.dbname
 }
-
-func (c NoopClient) Distribution() string {
-	return c.dsname
-}
-
-func (c NoopClient) DistributionIsDefault() bool {
-	return true
-}
-
-func (c NoopClient) SetDS(_ string) {}
 
 func (c NoopClient) RAddr() string {
 	return c.rAddr

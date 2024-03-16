@@ -132,6 +132,10 @@ type DistributionSelector struct {
 	ID string
 }
 
+type ShardSelector struct {
+	ID string
+}
+
 type DropRoutersAll struct{}
 
 func (*DropRoutersAll) iStatement() {}
@@ -139,6 +143,7 @@ func (*DropRoutersAll) iStatement() {}
 func (*KeyRangeSelector) iDrop()     {}
 func (*ShardingRuleSelector) iDrop() {}
 func (*DistributionSelector) iDrop() {}
+func (*ShardSelector) iDrop()        {}
 
 const (
 	EntityRouters      = "ROUTERS"
@@ -175,10 +180,56 @@ type UnregisterRouter struct {
 	ID string
 }
 
-type AttachTable struct {
-	Table        string
-	Distribution *DistributionSelector
+type AlterStmt interface {
+	iAlter()
 }
+
+type Alter struct {
+	Element Statement
+}
+
+func (*Alter) iStatement() {}
+
+type DistributionAlterStatement interface {
+	AlterStmt
+	iAlterDistribution()
+}
+
+type AlterDistribution struct {
+	Element Statement
+}
+
+func (*AlterDistribution) iStatement()         {}
+func (*AlterDistribution) iAlter()             {}
+func (*AlterDistribution) iAlterDistribution() {}
+
+type DistributionKeyEntry struct {
+	Column       string
+	HashFunction string
+}
+
+type DistributedRelation struct {
+	Name            string
+	DistributionKey []DistributionKeyEntry
+}
+
+type AttachRelation struct {
+	Distribution *DistributionSelector
+	Relations    []*DistributedRelation
+}
+
+func (*AttachRelation) iStatement()         {}
+func (*AttachRelation) iAlter()             {}
+func (*AttachRelation) iAlterDistribution() {}
+
+type DetachRelation struct {
+	Distribution *DistributionSelector
+	RelationName string
+}
+
+func (*DetachRelation) iStatement()         {}
+func (*DetachRelation) iAlter()             {}
+func (*DetachRelation) iAlterDistribution() {}
 
 // The frollowing constants represent SHOW statements.
 const (
@@ -193,6 +244,7 @@ const (
 	BackendConnectionsStr = "backend_connections"
 	StatusStr             = "status"
 	VersionStr            = "version"
+	RelationsStr          = "relations"
 	UnsupportedStr        = "unsupported"
 )
 
@@ -210,6 +262,7 @@ func (*Set) iStatement()                    {}
 func (*KeyRangeSelector) iStatement()       {}
 func (*ShardingRuleSelector) iStatement()   {}
 func (*DistributionSelector) iStatement()   {}
+func (*ShardSelector) iStatement()          {}
 func (*Lock) iStatement()                   {}
 func (*Unlock) iStatement()                 {}
 func (*Shutdown) iStatement()               {}
@@ -228,5 +281,3 @@ func (*WhereClauseOp) iStatement()          {}
 
 func (*RegisterRouter) iStatement()   {}
 func (*UnregisterRouter) iStatement() {}
-
-func (*AttachTable) iStatement() {}

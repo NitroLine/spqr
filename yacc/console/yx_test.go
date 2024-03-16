@@ -213,12 +213,12 @@ func TestKeyRange(t *testing.T) {
 
 	for _, tt := range []tcase{
 		{
-			query: "CREATE KEY RANGE krid1 FROM 1 TO 10 ROUTE TO sh1;",
+			query: "CREATE KEY RANGE krid1 FROM 1 TO 10 ROUTE TO sh1 FOR DISTRIBUTION ds1;",
 			exp: &spqrparser.Create{
 				Element: &spqrparser.KeyRangeDefinition{
 					ShardID:      "sh1",
 					KeyRangeID:   "krid1",
-					Distribution: "default",
+					Distribution: "ds1",
 					LowerBound:   []byte("1"),
 				},
 			},
@@ -226,12 +226,12 @@ func TestKeyRange(t *testing.T) {
 		},
 
 		{
-			query: "CREATE KEY RANGE krid2 FROM 88888888-8888-8888-8888-888888888889 TO FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF ROUTE TO sh2;",
+			query: "CREATE KEY RANGE krid2 FROM 88888888-8888-8888-8888-888888888889 TO FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF ROUTE TO sh2 FOR DISTRIBUTION ds1;",
 			exp: &spqrparser.Create{
 				Element: &spqrparser.KeyRangeDefinition{
 					ShardID:      "sh2",
 					KeyRangeID:   "krid2",
-					Distribution: "default",
+					Distribution: "ds1",
 					LowerBound:   []byte("88888888-8888-8888-8888-888888888889"),
 				},
 			},
@@ -259,12 +259,12 @@ func TestShardingRule(t *testing.T) {
 
 	for _, tt := range []tcase{
 		{
-			query: "CREATE SHARDING RULE rule1 COLUMNS id;",
+			query: "CREATE SHARDING RULE rule1 COLUMNS id FOR DISTRIBUTION ds1;",
 			exp: &spqrparser.Create{
 				Element: &spqrparser.ShardingRuleDefinition{
 					ID:           "rule1",
 					TableName:    "",
-					Distribution: "default",
+					Distribution: "ds1",
 					Entries: []spqrparser.ShardingRuleEntry{
 						{
 							Column: "id",
@@ -318,6 +318,15 @@ func TestAttachTable(t *testing.T) {
 
 	assert := assert.New(t)
 
+	tmp, err := spqrparser.Parse("ATTACH TABLE t TO DISTRIBUTION ds1;")
+	assert.Error(err)
+	assert.Equal(nil, tmp, "query %s", "ATTACH TABLE t TO DISTRIBUTION ds1;")
+}
+
+func TestAlter(t *testing.T) {
+
+	assert := assert.New(t)
+
 	type tcase struct {
 		query string
 		exp   spqrparser.Statement
@@ -326,10 +335,129 @@ func TestAttachTable(t *testing.T) {
 
 	for _, tt := range []tcase{
 		{
-			query: "ATTACH TABLE t TO DISTRIBUTION ds1;",
-			exp: &spqrparser.AttachTable{
-				Table:        "t",
-				Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+			query: "ALTER DISTRIBUTION ds1 ATTACH RELATION t DISTRIBUTION KEY id;",
+			exp: &spqrparser.Alter{
+				Element: &spqrparser.AlterDistribution{
+					Element: &spqrparser.AttachRelation{
+						Relations: []*spqrparser.DistributedRelation{
+							&spqrparser.DistributedRelation{
+								Name: "t",
+								DistributionKey: []spqrparser.DistributionKeyEntry{
+									{
+										Column: "id",
+									},
+								},
+							},
+						},
+						Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			query: "ALTER DISTRIBUTION ds1 ATTACH RELATION t DISTRIBUTION KEY id1, id2;",
+			exp: &spqrparser.Alter{
+				Element: &spqrparser.AlterDistribution{
+					Element: &spqrparser.AttachRelation{
+						Relations: []*spqrparser.DistributedRelation{
+							&spqrparser.DistributedRelation{
+								Name: "t",
+								DistributionKey: []spqrparser.DistributionKeyEntry{
+									{
+										Column: "id1",
+									},
+									{
+										Column: "id2",
+									},
+								},
+							},
+						},
+						Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			query: "ALTER DISTRIBUTION ds1 ATTACH RELATION t DISTRIBUTION KEY id1, id2 HASH FUNCTION murmur;",
+			exp: &spqrparser.Alter{
+				Element: &spqrparser.AlterDistribution{
+					Element: &spqrparser.AttachRelation{
+						Relations: []*spqrparser.DistributedRelation{
+							&spqrparser.DistributedRelation{
+								Name: "t",
+								DistributionKey: []spqrparser.DistributionKeyEntry{
+									{
+										Column: "id1",
+									},
+									{
+										Column:       "id2",
+										HashFunction: "murmur",
+									},
+								},
+							},
+						},
+						Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+					},
+				},
+			},
+			err: nil,
+		},
+
+		{
+			query: `
+		ALTER DISTRIBUTION 
+			ds1 
+		ATTACH
+			RELATION t DISTRIBUTION KEY id1, id2 HASH FUNCTION murmur
+			RELATION t2 DISTRIBUTION KEY xd1, xd2 HASH FUNCTION city
+			`,
+			exp: &spqrparser.Alter{
+				Element: &spqrparser.AlterDistribution{
+					Element: &spqrparser.AttachRelation{
+						Relations: []*spqrparser.DistributedRelation{
+							{
+								Name: "t",
+								DistributionKey: []spqrparser.DistributionKeyEntry{
+									{
+										Column: "id1",
+									},
+									{
+										Column:       "id2",
+										HashFunction: "murmur",
+									},
+								},
+							},
+							{
+								Name: "t2",
+								DistributionKey: []spqrparser.DistributionKeyEntry{
+									{
+										Column: "xd1",
+									},
+									{
+										Column:       "xd2",
+										HashFunction: "city",
+									},
+								},
+							},
+						},
+						Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+					},
+				},
+			},
+			err: nil,
+		},
+
+		{
+			query: "ALTER DISTRIBUTION ds1 DETACH RELATION t;",
+			exp: &spqrparser.Alter{
+				Element: &spqrparser.AlterDistribution{
+					Element: &spqrparser.DetachRelation{
+						RelationName: "t",
+						Distribution: &spqrparser.DistributionSelector{ID: "ds1"},
+					},
+				},
 			},
 			err: nil,
 		},
@@ -355,7 +483,7 @@ func TestDistribution(t *testing.T) {
 
 	for _, tt := range []tcase{
 		{
-			query: "CREATE DISTRIBUTION db1 SHARDING COLUMN TYPES integer;",
+			query: "CREATE DISTRIBUTION db1 COLUMN TYPES integer;",
 			exp: &spqrparser.Create{
 				Element: &spqrparser.DistributionDefinition{
 					ID: "db1",
@@ -367,7 +495,7 @@ func TestDistribution(t *testing.T) {
 			err: nil,
 		},
 		{
-			query: "CREATE DISTRIBUTION db1 SHARDING COLUMN TYPES varchar, varchar;",
+			query: "CREATE DISTRIBUTION db1 COLUMN TYPES varchar, varchar;",
 			exp: &spqrparser.Create{
 				Element: &spqrparser.DistributionDefinition{
 					ID: "db1",
@@ -375,6 +503,59 @@ func TestDistribution(t *testing.T) {
 						"varchar",
 						"varchar",
 					},
+				},
+			},
+			err: nil,
+		},
+	} {
+
+		tmp, err := spqrparser.Parse(tt.query)
+
+		assert.NoError(err, "query %s", tt.query)
+
+		assert.Equal(tt.exp, tmp, "query %s", tt.query)
+	}
+}
+
+func TestShard(t *testing.T) {
+
+	assert := assert.New(t)
+
+	type tcase struct {
+		query string
+		exp   spqrparser.Statement
+		err   error
+	}
+
+	for _, tt := range []tcase{
+		{
+			query: "CREATE SHARD sh1 WITH HOSTS localhost:6432;",
+			exp: &spqrparser.Create{
+				Element: &spqrparser.ShardDefinition{
+					Id:    "sh1",
+					Hosts: []string{"localhost:6432"},
+				},
+			},
+			err: nil,
+		},
+		{
+			query: "CREATE SHARD sh1 WITH HOSTS localhost:6432, other_hosts:6432;",
+			exp: &spqrparser.Create{
+				Element: &spqrparser.ShardDefinition{
+					Id: "sh1",
+					Hosts: []string{
+						"localhost:6432",
+						"other_hosts:6432",
+					},
+				},
+			},
+			err: nil,
+		},
+		{
+			query: "DROP SHARD sh1;",
+			exp: &spqrparser.Drop{
+				Element: &spqrparser.ShardSelector{
+					ID: "sh1",
 				},
 			},
 			err: nil,

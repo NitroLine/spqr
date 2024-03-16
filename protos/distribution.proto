@@ -4,12 +4,17 @@ package spqr;
 
 option go_package = "spqr/proto";
 
-message DistributedRelation {
-  string name = 1;
-  repeated string columns = 2;
+message DistributionKeyEntry {
+  string column = 1;
+  string hashFunction = 2;
 }
 
-message Distribution{
+message DistributedRelation {
+  string name = 1;
+  repeated DistributionKeyEntry distributionKey = 2;
+}
+
+message Distribution {
   string id = 1;
   repeated string ColumnTypes = 2;
   repeated DistributedRelation relations = 3;
@@ -21,9 +26,9 @@ message CreateDistributionRequest{
 
 message CreateDistributionReply{}
 
-message ListDistributionRequest{}
+message ListDistributionsRequest{}
 
-message ListDistributionReply {
+message ListDistributionsReply {
   repeated Distribution distributions = 1;
 }
 
@@ -40,6 +45,13 @@ message AlterDistributionAttachRequest{
 }
 
 message AlterDistributionAttachReply{}
+
+message AlterDistributionDetachRequest{
+  string id = 1;
+  repeated string relNames = 2;
+}
+
+message AlterDistributionDetachReply{}
 
 message GetDistributionRequest{
   string id = 1;
@@ -60,9 +72,10 @@ message GetRelationDistributionReply {
 service DistributionService {
   rpc CreateDistribution(CreateDistributionRequest) returns (CreateDistributionReply) {}
   rpc DropDistribution(DropDistributionRequest) returns (DropDistributionReply) {}
-  rpc ListDistribution(ListDistributionRequest) returns (ListDistributionReply) {}
+  rpc ListDistributions(ListDistributionsRequest) returns (ListDistributionsReply) {}
 
   rpc AlterDistributionAttach(AlterDistributionAttachRequest) returns (AlterDistributionAttachReply) {}
+  rpc AlterDistributionDetach(AlterDistributionDetachRequest) returns (AlterDistributionDetachReply) {}
 
   rpc GetDistribution(GetDistributionRequest) returns (GetDistributionReply) {}
 

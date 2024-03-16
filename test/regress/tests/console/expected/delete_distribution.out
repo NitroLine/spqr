@@ -1,5 +1,5 @@
 
-		SQPR router admin console
+		SPQR router admin console
 	Here you can configure your routing rules
 ------------------------------------------------
 	You can find documentation here 
@@ -15,18 +15,6 @@ CREATE DISTRIBUTION ds2;
          add distribution         
 ----------------------------------
  created distribution with id ds2
-(1 row)
-
-CREATE SHARDING RULE rule1 COLUMNS id FOR DISTRIBUTION ds1;
-                                      add sharding rule                                      
----------------------------------------------------------------------------------------------
- created sharding rule rule1 for table (*) with columns [id, hash: x->x] in ds1 distribution
-(1 row)
-
-CREATE SHARDING RULE rule2 COLUMNS id FOR DISTRIBUTION ds2;
-                                      add sharding rule                                      
----------------------------------------------------------------------------------------------
- created sharding rule rule2 for table (*) with columns [id, hash: x->x] in ds2 distribution
 (1 row)
 
 CREATE KEY RANGE krid1 FROM 1 ROUTE TO sh1 FOR DISTRIBUTION ds1;
@@ -47,13 +35,36 @@ CREATE KEY RANGE krid3 FROM 11 ROUTE TO sh2 FOR DISTRIBUTION ds2;
  created key range with bound 11
 (1 row)
 
+ALTER DISTRIBUTION ds1 ATTACH RELATION rel DISTRIBUTION KEY id;
+               attach table                
+-------------------------------------------
+ attached relation rel to distribution ds1
+(1 row)
+
 -- drop non-existing one
 DROP DISTRIBUTION ds23223;
-ERROR:  no such distribution.
--- non-cascade drop
+ERROR:  distribution "ds23223" not found.
+-- non-cascade drop with dependent key ranges
 DROP DISTRIBUTION ds1;
 ERROR:  cannot drop distribution ds1 because other objects depend on it
 HINT: Use DROP ... CASCADE to drop the dependent objects too.
+    
+-- non-cascade drop with attached relations
+DROP KEY RANGE krid1;
+    drop key range    
+----------------------
+ drop key range krid1
+(1 row)
+
+DROP KEY RANGE krid2;
+    drop key range    
+----------------------
+ drop key range krid2
+(1 row)
+
+DROP DISTRIBUTION ds1;
+ERROR:  cannot drop distribution ds1 because there are relations attached to it
+HINT: Use DROP ... CASCADE to detach relations automatically.
 DROP DISTRIBUTION ds1 CASCADE;
    drop distribution   
 -----------------------
@@ -61,11 +72,10 @@ DROP DISTRIBUTION ds1 CASCADE;
 (1 row)
 
 SHOW distributions;
- Distribution ID 
------------------
- default
- ds2
-(2 rows)
+ Distribution ID | Column types 
+-----------------+--------------
+ ds2             | 
+(1 row)
 
 DROP DISTRIBUTION ALL CASCADE;
    drop distribution   
@@ -74,18 +84,17 @@ DROP DISTRIBUTION ALL CASCADE;
 (1 row)
 
 SHOW distributions;
- Distribution ID 
------------------
- default
-(1 row)
+ Distribution ID | Column types 
+-----------------+--------------
+(0 rows)
 
 SHOW key_ranges;
  Key range ID | Shard ID | Distribution ID | Lower bound 
 --------------+----------+-----------------+-------------
 (0 rows)
 
-SHOW sharding_rules;
- Sharding Rule ID | Distribution ID | Table Name | Columns | Hash Function 
-------------------+-----------------+------------+---------+---------------
+SHOW relations;
+ Relation name | Distribution ID | Distribution key 
+---------------+-----------------+------------------
 (0 rows)
 

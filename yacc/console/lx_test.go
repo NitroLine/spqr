@@ -99,6 +99,79 @@ func TestSimpleLex(t *testing.T) {
 				spqrparser.VARCHAR,
 			},
 		},
+		{
+			query: "ALTER DISTRIBUTION ds1 ATTACH RELATION t DISTRIBUTION KEY id",
+			exp: []int{
+				spqrparser.ALTER,
+				spqrparser.DISTRIBUTION,
+				spqrparser.IDENT,
+				spqrparser.ATTACH,
+				spqrparser.RELATION,
+				spqrparser.IDENT,
+				spqrparser.DISTRIBUTION,
+				spqrparser.KEY,
+				spqrparser.IDENT,
+			},
+		},
+		{
+			query: "ALTER DISTRIBUTION ds1 ATTACH RELATION t DISTRIBUTION KEY id1, id2",
+			exp: []int{
+				spqrparser.ALTER,
+				spqrparser.DISTRIBUTION,
+				spqrparser.IDENT,
+				spqrparser.ATTACH,
+				spqrparser.RELATION,
+				spqrparser.IDENT,
+				spqrparser.DISTRIBUTION,
+				spqrparser.KEY,
+				spqrparser.IDENT,
+				spqrparser.TCOMMA,
+				spqrparser.IDENT,
+			},
+		},
+		{
+			query: "ALTER DISTRIBUTION ds1 DETACH RELATION t",
+			exp: []int{
+				spqrparser.ALTER,
+				spqrparser.DISTRIBUTION,
+				spqrparser.IDENT,
+				spqrparser.DETACH,
+				spqrparser.RELATION,
+				spqrparser.IDENT,
+			},
+		},
+		{
+			query: "CREATE SHARD sh1 WITH HOSTS localhost:6432",
+			exp: []int{
+				spqrparser.CREATE,
+				spqrparser.SHARD,
+				spqrparser.IDENT,
+				spqrparser.WITH,
+				spqrparser.HOSTS,
+				spqrparser.IDENT,
+			},
+		},
+		{
+			query: "CREATE SHARD sh1 WITH HOSTS localhost:6432, other_host:7432",
+			exp: []int{
+				spqrparser.CREATE,
+				spqrparser.SHARD,
+				spqrparser.IDENT,
+				spqrparser.WITH,
+				spqrparser.HOSTS,
+				spqrparser.IDENT,
+				spqrparser.TCOMMA,
+				spqrparser.IDENT,
+			},
+		},
+		{
+			query: "DROP SHARD sh1",
+			exp: []int{
+				spqrparser.DROP,
+				spqrparser.SHARD,
+				spqrparser.IDENT,
+			},
+		},
 	} {
 		tmp := spqrparser.NewStringTokenizer(tt.query)
 

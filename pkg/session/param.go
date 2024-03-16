@@ -5,10 +5,6 @@ import (
 )
 
 type SessionParamsHolder interface {
-	// get current session distribution
-	Distribution() string
-	SetDistribution(string)
-	DistributionIsDefault() bool
 
 	// Get current session DRB
 	DefaultRouteBehaviour() string
@@ -20,6 +16,9 @@ type SessionParamsHolder interface {
 
 	BindParams() [][]byte
 	SetBindParams([][]byte)
+
+	BindParamFormatCodes() []int16
+	SetParamFormatCodes([]int16)
 
 	RouteHint() routehint.RouteHint
 	SetRouteHint(routehint.RouteHint)

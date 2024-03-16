@@ -6,6 +6,7 @@ option go_package = "spqr/proto";
   
 service KeyRangeService {
   rpc ListKeyRange (ListKeyRangeRequest) returns (KeyRangeReply) {}
+  rpc ListAllKeyRanges (ListAllKeyRangesRequest) returns (KeyRangeReply) {}
   rpc LockKeyRange (LockKeyRangeRequest) returns (ModifyReply) {}
   rpc AddKeyRange(AddKeyRangeRequest) returns (ModifyReply) {}
   rpc DropKeyRange(DropKeyRangeRequest) returns (ModifyReply) {}
@@ -24,7 +25,7 @@ enum KeyRangeStatus {
 
 message KeyRange {
   string lower_bound = 1;
-  string upper_bound = 2;
+  string upper_bound = 2 [deprecated = true];
 }
 
 // key range info is mapped to shard
@@ -39,23 +40,26 @@ message ListKeyRangeRequest {
   string distribution = 1;
 }
 
+message ListAllKeyRangesRequest { }
+
 message AddKeyRangeRequest {
   KeyRangeInfo key_range_info = 1;
 }
 
 message SplitKeyRangeRequest {
-  KeyRangeInfo key_range_info = 1;
+  string new_id = 1;
   bytes bound = 2;
   string source_id = 3;
+  bool split_left = 4;
 }
 
 message MergeKeyRangeRequest {
-  bytes bound = 1;
-  string distribution = 2;
+  string base_id= 1;
+  string appendage_id = 2;
 }
 
 message MoveKeyRangeRequest {
-  KeyRangeInfo key_range = 1;
+  string id = 1;
   string toShardId = 2;
 }
 

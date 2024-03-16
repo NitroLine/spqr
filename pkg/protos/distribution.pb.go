@@ -20,19 +20,74 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type DistributionKeyEntry struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Column       string `protobuf:"bytes,1,opt,name=column,proto3" json:"column,omitempty"`
+	HashFunction string `protobuf:"bytes,2,opt,name=hashFunction,proto3" json:"hashFunction,omitempty"`
+}
+
+func (x *DistributionKeyEntry) Reset() {
+	*x = DistributionKeyEntry{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_distribution_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DistributionKeyEntry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DistributionKeyEntry) ProtoMessage() {}
+
+func (x *DistributionKeyEntry) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_distribution_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DistributionKeyEntry.ProtoReflect.Descriptor instead.
+func (*DistributionKeyEntry) Descriptor() ([]byte, []int) {
+	return file_protos_distribution_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *DistributionKeyEntry) GetColumn() string {
+	if x != nil {
+		return x.Column
+	}
+	return ""
+}
+
+func (x *DistributionKeyEntry) GetHashFunction() string {
+	if x != nil {
+		return x.HashFunction
+	}
+	return ""
+}
+
 type DistributedRelation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Name    string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Columns []string `protobuf:"bytes,2,rep,name=columns,proto3" json:"columns,omitempty"`
+	Name            string                  `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	DistributionKey []*DistributionKeyEntry `protobuf:"bytes,2,rep,name=distributionKey,proto3" json:"distributionKey,omitempty"`
 }
 
 func (x *DistributedRelation) Reset() {
 	*x = DistributedRelation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[0]
+		mi := &file_protos_distribution_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -45,7 +100,7 @@ func (x *DistributedRelation) String() string {
 func (*DistributedRelation) ProtoMessage() {}
 
 func (x *DistributedRelation) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[0]
+	mi := &file_protos_distribution_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +113,7 @@ func (x *DistributedRelation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DistributedRelation.ProtoReflect.Descriptor instead.
 func (*DistributedRelation) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{0}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DistributedRelation) GetName() string {
@@ -68,9 +123,9 @@ func (x *DistributedRelation) GetName() string {
 	return ""
 }
 
-func (x *DistributedRelation) GetColumns() []string {
+func (x *DistributedRelation) GetDistributionKey() []*DistributionKeyEntry {
 	if x != nil {
-		return x.Columns
+		return x.DistributionKey
 	}
 	return nil
 }
@@ -88,7 +143,7 @@ type Distribution struct {
 func (x *Distribution) Reset() {
 	*x = Distribution{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[1]
+		mi := &file_protos_distribution_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -101,7 +156,7 @@ func (x *Distribution) String() string {
 func (*Distribution) ProtoMessage() {}
 
 func (x *Distribution) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[1]
+	mi := &file_protos_distribution_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,7 +169,7 @@ func (x *Distribution) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Distribution.ProtoReflect.Descriptor instead.
 func (*Distribution) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{1}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Distribution) GetId() string {
@@ -149,7 +204,7 @@ type CreateDistributionRequest struct {
 func (x *CreateDistributionRequest) Reset() {
 	*x = CreateDistributionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[2]
+		mi := &file_protos_distribution_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -162,7 +217,7 @@ func (x *CreateDistributionRequest) String() string {
 func (*CreateDistributionRequest) ProtoMessage() {}
 
 func (x *CreateDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[2]
+	mi := &file_protos_distribution_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -175,7 +230,7 @@ func (x *CreateDistributionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDistributionRequest.ProtoReflect.Descriptor instead.
 func (*CreateDistributionRequest) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{2}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateDistributionRequest) GetDistributions() []*Distribution {
@@ -194,7 +249,7 @@ type CreateDistributionReply struct {
 func (x *CreateDistributionReply) Reset() {
 	*x = CreateDistributionReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[3]
+		mi := &file_protos_distribution_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -207,7 +262,7 @@ func (x *CreateDistributionReply) String() string {
 func (*CreateDistributionReply) ProtoMessage() {}
 
 func (x *CreateDistributionReply) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[3]
+	mi := &file_protos_distribution_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -220,57 +275,17 @@ func (x *CreateDistributionReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDistributionReply.ProtoReflect.Descriptor instead.
 func (*CreateDistributionReply) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{3}
-}
-
-type ListDistributionRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-}
-
-func (x *ListDistributionRequest) Reset() {
-	*x = ListDistributionRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[4]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListDistributionRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListDistributionRequest) ProtoMessage() {}
-
-func (x *ListDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[4]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListDistributionRequest.ProtoReflect.Descriptor instead.
-func (*ListDistributionRequest) Descriptor() ([]byte, []int) {
 	return file_protos_distribution_proto_rawDescGZIP(), []int{4}
 }
 
-type ListDistributionReply struct {
+type ListDistributionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	Distributions []*Distribution `protobuf:"bytes,1,rep,name=distributions,proto3" json:"distributions,omitempty"`
 }
 
-func (x *ListDistributionReply) Reset() {
-	*x = ListDistributionReply{}
+func (x *ListDistributionsRequest) Reset() {
+	*x = ListDistributionsRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_protos_distribution_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -278,13 +293,13 @@ func (x *ListDistributionReply) Reset() {
 	}
 }
 
-func (x *ListDistributionReply) String() string {
+func (x *ListDistributionsRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListDistributionReply) ProtoMessage() {}
+func (*ListDistributionsRequest) ProtoMessage() {}
 
-func (x *ListDistributionReply) ProtoReflect() protoreflect.Message {
+func (x *ListDistributionsRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_protos_distribution_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -296,12 +311,52 @@ func (x *ListDistributionReply) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListDistributionReply.ProtoReflect.Descriptor instead.
-func (*ListDistributionReply) Descriptor() ([]byte, []int) {
+// Deprecated: Use ListDistributionsRequest.ProtoReflect.Descriptor instead.
+func (*ListDistributionsRequest) Descriptor() ([]byte, []int) {
 	return file_protos_distribution_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *ListDistributionReply) GetDistributions() []*Distribution {
+type ListDistributionsReply struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Distributions []*Distribution `protobuf:"bytes,1,rep,name=distributions,proto3" json:"distributions,omitempty"`
+}
+
+func (x *ListDistributionsReply) Reset() {
+	*x = ListDistributionsReply{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_distribution_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListDistributionsReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListDistributionsReply) ProtoMessage() {}
+
+func (x *ListDistributionsReply) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_distribution_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListDistributionsReply.ProtoReflect.Descriptor instead.
+func (*ListDistributionsReply) Descriptor() ([]byte, []int) {
+	return file_protos_distribution_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ListDistributionsReply) GetDistributions() []*Distribution {
 	if x != nil {
 		return x.Distributions
 	}
@@ -319,7 +374,7 @@ type DropDistributionRequest struct {
 func (x *DropDistributionRequest) Reset() {
 	*x = DropDistributionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[6]
+		mi := &file_protos_distribution_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -332,7 +387,7 @@ func (x *DropDistributionRequest) String() string {
 func (*DropDistributionRequest) ProtoMessage() {}
 
 func (x *DropDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[6]
+	mi := &file_protos_distribution_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -345,7 +400,7 @@ func (x *DropDistributionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DropDistributionRequest.ProtoReflect.Descriptor instead.
 func (*DropDistributionRequest) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{6}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DropDistributionRequest) GetIds() []string {
@@ -364,7 +419,7 @@ type DropDistributionReply struct {
 func (x *DropDistributionReply) Reset() {
 	*x = DropDistributionReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[7]
+		mi := &file_protos_distribution_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -377,7 +432,7 @@ func (x *DropDistributionReply) String() string {
 func (*DropDistributionReply) ProtoMessage() {}
 
 func (x *DropDistributionReply) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[7]
+	mi := &file_protos_distribution_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -390,7 +445,7 @@ func (x *DropDistributionReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DropDistributionReply.ProtoReflect.Descriptor instead.
 func (*DropDistributionReply) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{7}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{8}
 }
 
 type AlterDistributionAttachRequest struct {
@@ -406,7 +461,7 @@ type AlterDistributionAttachRequest struct {
 func (x *AlterDistributionAttachRequest) Reset() {
 	*x = AlterDistributionAttachRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[8]
+		mi := &file_protos_distribution_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -419,7 +474,7 @@ func (x *AlterDistributionAttachRequest) String() string {
 func (*AlterDistributionAttachRequest) ProtoMessage() {}
 
 func (x *AlterDistributionAttachRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[8]
+	mi := &file_protos_distribution_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,7 +487,7 @@ func (x *AlterDistributionAttachRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlterDistributionAttachRequest.ProtoReflect.Descriptor instead.
 func (*AlterDistributionAttachRequest) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{8}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AlterDistributionAttachRequest) GetId() string {
@@ -465,7 +520,7 @@ type AlterDistributionAttachReply struct {
 func (x *AlterDistributionAttachReply) Reset() {
 	*x = AlterDistributionAttachReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[9]
+		mi := &file_protos_distribution_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -478,7 +533,7 @@ func (x *AlterDistributionAttachReply) String() string {
 func (*AlterDistributionAttachReply) ProtoMessage() {}
 
 func (x *AlterDistributionAttachReply) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[9]
+	mi := &file_protos_distribution_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -491,7 +546,100 @@ func (x *AlterDistributionAttachReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AlterDistributionAttachReply.ProtoReflect.Descriptor instead.
 func (*AlterDistributionAttachReply) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{9}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{10}
+}
+
+type AlterDistributionDetachRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id       string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	RelNames []string `protobuf:"bytes,2,rep,name=relNames,proto3" json:"relNames,omitempty"`
+}
+
+func (x *AlterDistributionDetachRequest) Reset() {
+	*x = AlterDistributionDetachRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_distribution_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AlterDistributionDetachRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlterDistributionDetachRequest) ProtoMessage() {}
+
+func (x *AlterDistributionDetachRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_distribution_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlterDistributionDetachRequest.ProtoReflect.Descriptor instead.
+func (*AlterDistributionDetachRequest) Descriptor() ([]byte, []int) {
+	return file_protos_distribution_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AlterDistributionDetachRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *AlterDistributionDetachRequest) GetRelNames() []string {
+	if x != nil {
+		return x.RelNames
+	}
+	return nil
+}
+
+type AlterDistributionDetachReply struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *AlterDistributionDetachReply) Reset() {
+	*x = AlterDistributionDetachReply{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_protos_distribution_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AlterDistributionDetachReply) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AlterDistributionDetachReply) ProtoMessage() {}
+
+func (x *AlterDistributionDetachReply) ProtoReflect() protoreflect.Message {
+	mi := &file_protos_distribution_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AlterDistributionDetachReply.ProtoReflect.Descriptor instead.
+func (*AlterDistributionDetachReply) Descriptor() ([]byte, []int) {
+	return file_protos_distribution_proto_rawDescGZIP(), []int{12}
 }
 
 type GetDistributionRequest struct {
@@ -505,7 +653,7 @@ type GetDistributionRequest struct {
 func (x *GetDistributionRequest) Reset() {
 	*x = GetDistributionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[10]
+		mi := &file_protos_distribution_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -518,7 +666,7 @@ func (x *GetDistributionRequest) String() string {
 func (*GetDistributionRequest) ProtoMessage() {}
 
 func (x *GetDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[10]
+	mi := &file_protos_distribution_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -531,7 +679,7 @@ func (x *GetDistributionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionRequest.ProtoReflect.Descriptor instead.
 func (*GetDistributionRequest) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{10}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetDistributionRequest) GetId() string {
@@ -552,7 +700,7 @@ type GetDistributionReply struct {
 func (x *GetDistributionReply) Reset() {
 	*x = GetDistributionReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[11]
+		mi := &file_protos_distribution_proto_msgTypes[14]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -565,7 +713,7 @@ func (x *GetDistributionReply) String() string {
 func (*GetDistributionReply) ProtoMessage() {}
 
 func (x *GetDistributionReply) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[11]
+	mi := &file_protos_distribution_proto_msgTypes[14]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -578,7 +726,7 @@ func (x *GetDistributionReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDistributionReply.ProtoReflect.Descriptor instead.
 func (*GetDistributionReply) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{11}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetDistributionReply) GetDistribution() *Distribution {
@@ -599,7 +747,7 @@ type GetRelationDistributionRequest struct {
 func (x *GetRelationDistributionRequest) Reset() {
 	*x = GetRelationDistributionRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[12]
+		mi := &file_protos_distribution_proto_msgTypes[15]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -612,7 +760,7 @@ func (x *GetRelationDistributionRequest) String() string {
 func (*GetRelationDistributionRequest) ProtoMessage() {}
 
 func (x *GetRelationDistributionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[12]
+	mi := &file_protos_distribution_proto_msgTypes[15]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -625,7 +773,7 @@ func (x *GetRelationDistributionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRelationDistributionRequest.ProtoReflect.Descriptor instead.
 func (*GetRelationDistributionRequest) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{12}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetRelationDistributionRequest) GetId() string {
@@ -646,7 +794,7 @@ type GetRelationDistributionReply struct {
 func (x *GetRelationDistributionReply) Reset() {
 	*x = GetRelationDistributionReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_protos_distribution_proto_msgTypes[13]
+		mi := &file_protos_distribution_proto_msgTypes[16]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -659,7 +807,7 @@ func (x *GetRelationDistributionReply) String() string {
 func (*GetRelationDistributionReply) ProtoMessage() {}
 
 func (x *GetRelationDistributionReply) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_distribution_proto_msgTypes[13]
+	mi := &file_protos_distribution_proto_msgTypes[16]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -672,7 +820,7 @@ func (x *GetRelationDistributionReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRelationDistributionReply.ProtoReflect.Descriptor instead.
 func (*GetRelationDistributionReply) Descriptor() ([]byte, []int) {
-	return file_protos_distribution_proto_rawDescGZIP(), []int{13}
+	return file_protos_distribution_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetRelationDistributionReply) GetDistribution() *Distribution {
@@ -687,11 +835,19 @@ var File_protos_distribution_proto protoreflect.FileDescriptor
 var file_protos_distribution_proto_rawDesc = []byte{
 	0x0a, 0x19, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
 	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x73, 0x70, 0x71,
-	0x72, 0x22, 0x43, 0x0a, 0x13, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x64,
-	0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x73, 0x22, 0x79, 0x0a, 0x0c, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69,
+	0x72, 0x22, 0x52, 0x0a, 0x14, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x4b, 0x65, 0x79, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x16, 0x0a, 0x06, 0x63, 0x6f, 0x6c,
+	0x75, 0x6d, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x63, 0x6f, 0x6c, 0x75, 0x6d,
+	0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x68, 0x61, 0x73, 0x68, 0x46, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x68, 0x61, 0x73, 0x68, 0x46, 0x75, 0x6e,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x6f, 0x0a, 0x13, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x65, 0x64, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x12, 0x44, 0x0a, 0x0f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
+	0x4b, 0x65, 0x79, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x73, 0x70, 0x71, 0x72,
+	0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79,
+	0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x0f, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x4b, 0x65, 0x79, 0x22, 0x79, 0x0a, 0x0c, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69,
 	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e,
 	0x54, 0x79, 0x70, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x43, 0x6f, 0x6c,
@@ -706,28 +862,35 @@ var file_protos_distribution_proto_rawDesc = []byte{
 	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0d, 0x64, 0x69, 0x73, 0x74, 0x72,
 	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x19, 0x0a, 0x17, 0x43, 0x72, 0x65, 0x61,
 	0x74, 0x65, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x70, 0x6c, 0x79, 0x22, 0x19, 0x0a, 0x17, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x51,
-	0x0a, 0x15, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x38, 0x0a, 0x0d, 0x64, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12,
-	0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x0d, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e,
-	0x73, 0x22, 0x2b, 0x0a, 0x17, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
-	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10, 0x0a, 0x03,
-	0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x69, 0x64, 0x73, 0x22, 0x17,
-	0x0a, 0x15, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x8b, 0x01, 0x0a, 0x1e, 0x41, 0x6c, 0x74, 0x65,
-	0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74,
-	0x61, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x43, 0x6f,
-	0x6c, 0x75, 0x6d, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x0b, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x12, 0x37, 0x0a, 0x09,
-	0x72, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x19, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x65, 0x64, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x09, 0x72, 0x65, 0x6c, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x1e, 0x0a, 0x1c, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69,
-	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68,
+	0x70, 0x6c, 0x79, 0x22, 0x1a, 0x0a, 0x18, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22,
+	0x52, 0x0a, 0x16, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
+	0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x38, 0x0a, 0x0d, 0x64, 0x69, 0x73,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x12, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0d, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x22, 0x2b, 0x0a, 0x17, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x10,
+	0x0a, 0x03, 0x69, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x69, 0x64, 0x73,
+	0x22, 0x17, 0x0a, 0x15, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x8b, 0x01, 0x0a, 0x1e, 0x41, 0x6c,
+	0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b,
+	0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28,
+	0x09, 0x52, 0x0b, 0x43, 0x6f, 0x6c, 0x75, 0x6d, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x73, 0x12, 0x37,
+	0x0a, 0x09, 0x72, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x65, 0x64, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x09, 0x72, 0x65,
+	0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x1e, 0x0a, 0x1c, 0x41, 0x6c, 0x74, 0x65, 0x72,
+	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x68, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x4c, 0x0a, 0x1e, 0x41, 0x6c, 0x74, 0x65, 0x72,
+	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61,
+	0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x72, 0x65, 0x6c,
+	0x4e, 0x61, 0x6d, 0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x72, 0x65, 0x6c,
+	0x4e, 0x61, 0x6d, 0x65, 0x73, 0x22, 0x1e, 0x0a, 0x1c, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69,
+	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x63, 0x68,
 	0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x28, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x44, 0x69, 0x73, 0x74,
 	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22,
@@ -744,7 +907,7 @@ var file_protos_distribution_proto_rawDesc = []byte{
 	0x79, 0x12, 0x36, 0x0a, 0x0c, 0x64, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
 	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x44,
 	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0c, 0x64, 0x69, 0x73,
-	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0xae, 0x04, 0x0a, 0x13, 0x44, 0x69,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0x98, 0x05, 0x0a, 0x13, 0x44, 0x69,
 	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63,
 	0x65, 0x12, 0x56, 0x0a, 0x12, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x44, 0x69, 0x73, 0x74, 0x72,
 	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1f, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x43,
@@ -756,31 +919,38 @@ var file_protos_distribution_proto_rawDesc = []byte{
 	0x73, 0x70, 0x71, 0x72, 0x2e, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
 	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b, 0x2e, 0x73,
 	0x70, 0x71, 0x72, 0x2e, 0x44, 0x72, 0x6f, 0x70, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x50, 0x0a, 0x10, 0x4c,
-	0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12,
-	0x1d, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1b,
-	0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69,
-	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x65, 0x0a,
-	0x17, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x12, 0x24, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e,
+	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x53, 0x0a, 0x11, 0x4c,
+	0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x12, 0x1e, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x1c, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00,
+	0x12, 0x65, 0x0a, 0x17, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x12, 0x24, 0x2e, 0x73, 0x70,
+	0x71, 0x72, 0x2e, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75,
+	0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x22, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69,
+	0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68,
+	0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x65, 0x0a, 0x17, 0x41, 0x6c, 0x74, 0x65, 0x72,
+	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61,
+	0x63, 0x68, 0x12, 0x24, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44,
+	0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x63,
+	0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e,
 	0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
-	0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22,
-	0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x41, 0x6c, 0x74, 0x65, 0x72, 0x44, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x74, 0x74, 0x61, 0x63, 0x68, 0x52, 0x65, 0x70,
-	0x6c, 0x79, 0x22, 0x00, 0x12, 0x4d, 0x0a, 0x0f, 0x47, 0x65, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x1c, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47,
-	0x65, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47, 0x65, 0x74,
-	0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c,
-	0x79, 0x22, 0x00, 0x12, 0x65, 0x0a, 0x17, 0x47, 0x65, 0x74, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x24,
+	0x6e, 0x44, 0x65, 0x74, 0x61, 0x63, 0x68, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x4d,
+	0x0a, 0x0f, 0x47, 0x65, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x1c, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47, 0x65, 0x74, 0x44, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x1a, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47, 0x65, 0x74, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x12, 0x65, 0x0a,
+	0x17, 0x47, 0x65, 0x74, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x24, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e,
+	0x47, 0x65, 0x74, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x22,
 	0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47, 0x65, 0x74, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x22, 0x2e, 0x73, 0x70, 0x71, 0x72, 0x2e, 0x47, 0x65, 0x74, 0x52,
-	0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x22, 0x00, 0x42, 0x0c, 0x5a, 0x0a, 0x73, 0x70,
-	0x71, 0x72, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x44, 0x69, 0x73, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x70,
+	0x6c, 0x79, 0x22, 0x00, 0x42, 0x0c, 0x5a, 0x0a, 0x73, 0x70, 0x71, 0x72, 0x2f, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -795,47 +965,53 @@ func file_protos_distribution_proto_rawDescGZIP() []byte {
 	return file_protos_distribution_proto_rawDescData
 }
 
-var file_protos_distribution_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_protos_distribution_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_protos_distribution_proto_goTypes = []interface{}{
-	(*DistributedRelation)(nil),            // 0: spqr.DistributedRelation
-	(*Distribution)(nil),                   // 1: spqr.Distribution
-	(*CreateDistributionRequest)(nil),      // 2: spqr.CreateDistributionRequest
-	(*CreateDistributionReply)(nil),        // 3: spqr.CreateDistributionReply
-	(*ListDistributionRequest)(nil),        // 4: spqr.ListDistributionRequest
-	(*ListDistributionReply)(nil),          // 5: spqr.ListDistributionReply
-	(*DropDistributionRequest)(nil),        // 6: spqr.DropDistributionRequest
-	(*DropDistributionReply)(nil),          // 7: spqr.DropDistributionReply
-	(*AlterDistributionAttachRequest)(nil), // 8: spqr.AlterDistributionAttachRequest
-	(*AlterDistributionAttachReply)(nil),   // 9: spqr.AlterDistributionAttachReply
-	(*GetDistributionRequest)(nil),         // 10: spqr.GetDistributionRequest
-	(*GetDistributionReply)(nil),           // 11: spqr.GetDistributionReply
-	(*GetRelationDistributionRequest)(nil), // 12: spqr.GetRelationDistributionRequest
-	(*GetRelationDistributionReply)(nil),   // 13: spqr.GetRelationDistributionReply
+	(*DistributionKeyEntry)(nil),           // 0: spqr.DistributionKeyEntry
+	(*DistributedRelation)(nil),            // 1: spqr.DistributedRelation
+	(*Distribution)(nil),                   // 2: spqr.Distribution
+	(*CreateDistributionRequest)(nil),      // 3: spqr.CreateDistributionRequest
+	(*CreateDistributionReply)(nil),        // 4: spqr.CreateDistributionReply
+	(*ListDistributionsRequest)(nil),       // 5: spqr.ListDistributionsRequest
+	(*ListDistributionsReply)(nil),         // 6: spqr.ListDistributionsReply
+	(*DropDistributionRequest)(nil),        // 7: spqr.DropDistributionRequest
+	(*DropDistributionReply)(nil),          // 8: spqr.DropDistributionReply
+	(*AlterDistributionAttachRequest)(nil), // 9: spqr.AlterDistributionAttachRequest
+	(*AlterDistributionAttachReply)(nil),   // 10: spqr.AlterDistributionAttachReply
+	(*AlterDistributionDetachRequest)(nil), // 11: spqr.AlterDistributionDetachRequest
+	(*AlterDistributionDetachReply)(nil),   // 12: spqr.AlterDistributionDetachReply
+	(*GetDistributionRequest)(nil),         // 13: spqr.GetDistributionRequest
+	(*GetDistributionReply)(nil),           // 14: spqr.GetDistributionReply
+	(*GetRelationDistributionRequest)(nil), // 15: spqr.GetRelationDistributionRequest
+	(*GetRelationDistributionReply)(nil),   // 16: spqr.GetRelationDistributionReply
 }
 var file_protos_distribution_proto_depIdxs = []int32{
-	0,  // 0: spqr.Distribution.relations:type_name -> spqr.DistributedRelation
-	1,  // 1: spqr.CreateDistributionRequest.distributions:type_name -> spqr.Distribution
-	1,  // 2: spqr.ListDistributionReply.distributions:type_name -> spqr.Distribution
-	0,  // 3: spqr.AlterDistributionAttachRequest.relations:type_name -> spqr.DistributedRelation
-	1,  // 4: spqr.GetDistributionReply.distribution:type_name -> spqr.Distribution
-	1,  // 5: spqr.GetRelationDistributionReply.distribution:type_name -> spqr.Distribution
-	2,  // 6: spqr.DistributionService.CreateDistribution:input_type -> spqr.CreateDistributionRequest
-	6,  // 7: spqr.DistributionService.DropDistribution:input_type -> spqr.DropDistributionRequest
-	4,  // 8: spqr.DistributionService.ListDistribution:input_type -> spqr.ListDistributionRequest
-	8,  // 9: spqr.DistributionService.AlterDistributionAttach:input_type -> spqr.AlterDistributionAttachRequest
-	10, // 10: spqr.DistributionService.GetDistribution:input_type -> spqr.GetDistributionRequest
-	12, // 11: spqr.DistributionService.GetRelationDistribution:input_type -> spqr.GetRelationDistributionRequest
-	3,  // 12: spqr.DistributionService.CreateDistribution:output_type -> spqr.CreateDistributionReply
-	7,  // 13: spqr.DistributionService.DropDistribution:output_type -> spqr.DropDistributionReply
-	5,  // 14: spqr.DistributionService.ListDistribution:output_type -> spqr.ListDistributionReply
-	9,  // 15: spqr.DistributionService.AlterDistributionAttach:output_type -> spqr.AlterDistributionAttachReply
-	11, // 16: spqr.DistributionService.GetDistribution:output_type -> spqr.GetDistributionReply
-	13, // 17: spqr.DistributionService.GetRelationDistribution:output_type -> spqr.GetRelationDistributionReply
-	12, // [12:18] is the sub-list for method output_type
-	6,  // [6:12] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	0,  // 0: spqr.DistributedRelation.distributionKey:type_name -> spqr.DistributionKeyEntry
+	1,  // 1: spqr.Distribution.relations:type_name -> spqr.DistributedRelation
+	2,  // 2: spqr.CreateDistributionRequest.distributions:type_name -> spqr.Distribution
+	2,  // 3: spqr.ListDistributionsReply.distributions:type_name -> spqr.Distribution
+	1,  // 4: spqr.AlterDistributionAttachRequest.relations:type_name -> spqr.DistributedRelation
+	2,  // 5: spqr.GetDistributionReply.distribution:type_name -> spqr.Distribution
+	2,  // 6: spqr.GetRelationDistributionReply.distribution:type_name -> spqr.Distribution
+	3,  // 7: spqr.DistributionService.CreateDistribution:input_type -> spqr.CreateDistributionRequest
+	7,  // 8: spqr.DistributionService.DropDistribution:input_type -> spqr.DropDistributionRequest
+	5,  // 9: spqr.DistributionService.ListDistributions:input_type -> spqr.ListDistributionsRequest
+	9,  // 10: spqr.DistributionService.AlterDistributionAttach:input_type -> spqr.AlterDistributionAttachRequest
+	11, // 11: spqr.DistributionService.AlterDistributionDetach:input_type -> spqr.AlterDistributionDetachRequest
+	13, // 12: spqr.DistributionService.GetDistribution:input_type -> spqr.GetDistributionRequest
+	15, // 13: spqr.DistributionService.GetRelationDistribution:input_type -> spqr.GetRelationDistributionRequest
+	4,  // 14: spqr.DistributionService.CreateDistribution:output_type -> spqr.CreateDistributionReply
+	8,  // 15: spqr.DistributionService.DropDistribution:output_type -> spqr.DropDistributionReply
+	6,  // 16: spqr.DistributionService.ListDistributions:output_type -> spqr.ListDistributionsReply
+	10, // 17: spqr.DistributionService.AlterDistributionAttach:output_type -> spqr.AlterDistributionAttachReply
+	12, // 18: spqr.DistributionService.AlterDistributionDetach:output_type -> spqr.AlterDistributionDetachReply
+	14, // 19: spqr.DistributionService.GetDistribution:output_type -> spqr.GetDistributionReply
+	16, // 20: spqr.DistributionService.GetRelationDistribution:output_type -> spqr.GetRelationDistributionReply
+	14, // [14:21] is the sub-list for method output_type
+	7,  // [7:14] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_protos_distribution_proto_init() }
@@ -845,7 +1021,7 @@ func file_protos_distribution_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_protos_distribution_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DistributedRelation); i {
+			switch v := v.(*DistributionKeyEntry); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -857,7 +1033,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Distribution); i {
+			switch v := v.(*DistributedRelation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -869,7 +1045,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateDistributionRequest); i {
+			switch v := v.(*Distribution); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -881,7 +1057,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CreateDistributionReply); i {
+			switch v := v.(*CreateDistributionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -893,7 +1069,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListDistributionRequest); i {
+			switch v := v.(*CreateDistributionReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -905,7 +1081,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListDistributionReply); i {
+			switch v := v.(*ListDistributionsRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -917,7 +1093,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DropDistributionRequest); i {
+			switch v := v.(*ListDistributionsReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -929,7 +1105,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DropDistributionReply); i {
+			switch v := v.(*DropDistributionRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -941,7 +1117,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AlterDistributionAttachRequest); i {
+			switch v := v.(*DropDistributionReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -953,7 +1129,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*AlterDistributionAttachReply); i {
+			switch v := v.(*AlterDistributionAttachRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -965,7 +1141,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetDistributionRequest); i {
+			switch v := v.(*AlterDistributionAttachReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -977,7 +1153,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetDistributionReply); i {
+			switch v := v.(*AlterDistributionDetachRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -989,7 +1165,7 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*GetRelationDistributionRequest); i {
+			switch v := v.(*AlterDistributionDetachReply); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1001,6 +1177,42 @@ func file_protos_distribution_proto_init() {
 			}
 		}
 		file_protos_distribution_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetDistributionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_distribution_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetDistributionReply); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_distribution_proto_msgTypes[15].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetRelationDistributionRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_protos_distribution_proto_msgTypes[16].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetRelationDistributionReply); i {
 			case 0:
 				return &v.state
@@ -1019,7 +1231,7 @@ func file_protos_distribution_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_protos_distribution_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

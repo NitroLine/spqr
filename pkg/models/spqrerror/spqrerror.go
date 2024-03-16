@@ -20,6 +20,7 @@ const (
 	SPQR_NOT_IMPLEMENTED     = "SPQRI"
 	SPQR_ROUTER_ERROR        = "SPQRL"
 	SPQR_METADATA_CORRUPTION = "SPQRZ"
+	SPQR_INVALID_REQUEST     = "SPQRJ"
 )
 
 var existingErrorCodeMap = map[string]string{
@@ -39,7 +40,10 @@ var existingErrorCodeMap = map[string]string{
 	SPQR_NOT_IMPLEMENTED:     "Not implemented",
 	SPQR_ROUTER_ERROR:        "Router error",
 	SPQR_METADATA_CORRUPTION: "routing metadata corrupted",
+	SPQR_INVALID_REQUEST:     "Invalid Request",
 }
+
+var ShardingKeysRemoved = New(SPQR_INVALID_REQUEST, "sharding rules are removed from SPQR, see https://github.com/pg-sharding/spqr/blob/master/docs/Syntax.md")
 
 func GetMessageByCode(errorCode string) string {
 	rep, ok := existingErrorCodeMap[errorCode]
